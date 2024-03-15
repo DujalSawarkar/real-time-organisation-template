@@ -14,7 +14,6 @@ import { UserService } from './user/user.service';
 
 import { CreateUserDto } from './user/dto/create-user.dto/create-user.dto';
 
-
 @Controller('auth')
 export class AppController {
   constructor(
@@ -44,7 +43,6 @@ export class AppController {
       }
       if (user == null) {
         let newUser = await this.userService.createuser(CreateUserDto);
-       
 
         delete newUser.password;
 

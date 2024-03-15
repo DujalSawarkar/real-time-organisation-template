@@ -1,5 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Organization } from './Organisation';
 
 @Entity()
 export class User {
@@ -18,9 +24,12 @@ export class User {
   @Column()
   category: string;
 
-  @Column({length: 10})
+  @Column({ length: 10 })
   phone_number: string;
 
-  @Column({ default: 'USER'})
+  @Column({ default: 'USER' })
   role: string;
+
+  @ManyToOne(() => Organization, (organization) => organization.users)
+  organization: Organization;
 }
