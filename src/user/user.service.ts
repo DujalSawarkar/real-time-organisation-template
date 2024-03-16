@@ -21,7 +21,9 @@ export class UserService {
   async getuser(email: string) {
     return await this.userRepository.findOne({ where: { email: email } });
   }
-
+  async getuserbyid(id: number) {
+    return await this.userRepository.findOne({ where: { id: id } });
+  }
   async createuser(createUserDto: CreateUserDto) {
     let saltRounds = 10;
     let user = new User();

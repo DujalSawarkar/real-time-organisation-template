@@ -24,13 +24,14 @@ export class AppController {
   @Post('/login')
   @UseGuards(AuthGuard('local'))
   async login(@Request() req) {
-    let user = req.user;
-
+    let user_id = req.body.user_id;
+    const user = await this.userService.getuserbyid(user_id);
+    console.log('user', user);
     delete user.password;
 
     const tokken = await this.authService.generateToken(user);
 
-    return { token: tokken, role: user.role };
+    return { token: tokken, role: user.role, user };
   }
 
   @Post('/register')
