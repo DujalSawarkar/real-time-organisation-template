@@ -1,18 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from 'src/Entities/user';
 import { Repository, getConnection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
-import { Organization } from 'src/Entities/Organisation';
-import { CreateOrganizationDto } from './dto/create-user.dto/create-organisation.dto';
+
+import { CreatePersonalDetailsDto } from './dto/create-user.dto/create-personal_details.dto';
+import { Additional_Details } from 'src/Entities/Additional_Details';
+import { threadId } from 'worker_threads';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Organization)
-    private readonly organisationrepository: Repository<Organization>,
+
+    @InjectRepository(Additional_Details)
+    private readonly Additinal_details: Repository<Additional_Details>,
   ) {}
 
   async getuser(email: string) {
@@ -34,35 +37,48 @@ export class UserService {
 
   async create_organisation_details(
     user_id: number,
-    createorganisationdto: CreateOrganizationDto,
+
+    personal_details: CreatePersonalDetailsDto,
   ) {
-    const user = await this.userRepository.findOne({ where: { id: user_id } });
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: user_id },
+      });
 
-    const organization = new Organization();
-    organization.name = createorganisationdto.name;
-    organization.email = createorganisationdto.email;
-    organization.aboutUs = createorganisationdto.aboutus;
-    organization.services = createorganisationdto.services;
-    organization.serviceArea = createorganisationdto.servicearea;
-    organization.Top_Clients = createorganisationdto.Top_Clients;
-    organization.success_story = createorganisationdto.success_story;
-    organization.address = createorganisationdto.address;
+      let additional_details = new Additional_Details();
+      additional_details.name = personal_details.name;
+      additional_details.email = personal_details.email;
+      additional_details.aboutUs = personal_details.aboutus;
+      additional_details.services = personal_details.services;
+      additional_details.serviceArea = personal_details.servicearea;
+      additional_details.Top_Clients = personal_details.Top_Clients;
+      additional_details.success_story = personal_details.success_story;
+      additional_details.address = personal_details.address;
+      additional_details.Anniversary = personal_details.Anniversary;
+      additional_details.DOB = personal_details.DOB;
+      additional_details.spouse_name = personal_details.spouse_name;
+      additional_details.Hobbies = personal_details.Hobbies;
+      additional_details.Looking_For = personal_details.Looking_For;
+      additional_details.Refreral_Partners = personal_details.Refreral_Partners;
 
-    organization.users = [user];
-
-    await this.organisationrepository.save(organization);
-    user.organization = organization;
-    await this.userRepository.save(user);
-    return organization;
+      additional_details.user = user;
+      await this.Additinal_details.save(additional_details);
+      await this.userRepository.save(user);
+      return { additional_details };
+    } catch (error) {
+      throw new NotFoundException(
+        'Additoinal details are already present for this user',
+      );
+    }
   }
 
   async get_organisation_details(user_id: number) {
     const user = await this.userRepository.findOne({
       where: { id: user_id },
-      relations: ['organization'],
+      relations: ['additional_details'],
     });
 
     console.log('user:', user);
-    return user.organization, user;
+    return { user };
   }
 }

@@ -4,8 +4,10 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
-import { Organization } from './Organisation';
+
+import { Additional_Details } from './Additional_Details';
 
 @Entity()
 export class User {
@@ -30,6 +32,9 @@ export class User {
   @Column({ default: 'USER' })
   role: string;
 
-  @ManyToOne(() => Organization, (organization) => organization.users)
-  organization: Organization;
+  @OneToOne(
+    () => Additional_Details,
+    (additional_details) => additional_details.user,
+  )
+  additional_details: Additional_Details;
 }

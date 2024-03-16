@@ -2,17 +2,30 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user';
 
 @Entity()
-export class Organization {
+export class Additional_Details {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'json', nullable: true })
+  Looking_For: string[];
+
+  @Column({ type: 'json', nullable: true })
+  Refreral_Partners: string[];
+
+  @Column()
+  DOB: Date;
+
+  @Column()
+  spouse_name: string;
+
+  @Column({ type: 'json', nullable: true })
+  Hobbies: string[];
   @Column()
   name: string;
 
@@ -37,7 +50,10 @@ export class Organization {
   @Column({ type: 'text', nullable: true })
   address: string;
 
-  @OneToMany(() => User, (user) => user.organization)
-  @JoinColumn({ name: 'User_id' })
-  users: User[];
+  @Column()
+  Anniversary: Date;
+
+  @OneToOne(() => User, (user) => user.additional_details)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

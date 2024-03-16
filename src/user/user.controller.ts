@@ -1,8 +1,9 @@
 import { Controller, Post, Req, Body, UseGuards, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleGuard } from 'src/role.guard';
-import { CreateOrganizationDto } from './dto/create-user.dto/create-organisation.dto';
+
 import { UserService } from './user.service';
+import { CreatePersonalDetailsDto } from './dto/create-user.dto/create-personal_details.dto';
 
 @Controller('user')
 @UseGuards(AuthGuard('jwt'), new RoleGuard('USER'))
@@ -12,14 +13,14 @@ export class UserController {
   @Post()
   async create_organisation_details(
     @Req() req,
-    @Body() createorganisationdto: CreateOrganizationDto,
+    @Body() user_details: CreatePersonalDetailsDto,
   ) {
     let user_id = req.user.user.id;
 
     console.log('user id', user_id);
     let organisation = await this.userservice.create_organisation_details(
       user_id,
-      createorganisationdto,
+      user_details,
     );
     console.log('organisation', organisation);
     return organisation;
